@@ -2,7 +2,8 @@ import express from 'express';
 import { body, validationResult } from 'express-validator';
 import jwt from 'jsonwebtoken';
 import userModel from '../models/userModel.js';
-
+import dotenv from 'dotenv';
+dotenv.config();
 const router = express.Router();
 
 router.post('/register', [
@@ -24,10 +25,10 @@ router.post('/register', [
     user = new userModel({ email, password, username, role });
     await user.save();
     
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.status(201).json({ token });
+    const token = jwt.sign({ userId: user._id, role, email, username,  }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
+    res.status(201).json({ token, user });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error' , error});
   }
 });
 
@@ -42,15 +43,20 @@ router.post('/login', [
 
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
+    const user = await userModel.findOne({ email });
     if (!user || !(await user.comparePassword(password))) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
     
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.json({ token });
+    const token = jwt.sign(
+      { userId: user._id, role: user.role, email: user.email, username: user.username },
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: '1h' }
+    );
+    res.cookie('token', token, { httpOnly: true });
+    res.json({ token, user });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error', error });
   }
 });
 
