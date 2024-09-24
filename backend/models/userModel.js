@@ -11,16 +11,6 @@ const userSchema = new mongoose.Schema(
       trim: true,
       index: true,
     },
-    fullName: {
-      type: String,
-      required: true,
-      trim: true,
-      index: true,
-    },
-    avatar: {
-      type: String, //cloudinary url
-      required: true,
-    },
     email: {
       type: String,
       required: true,
@@ -31,10 +21,6 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: [true, 'Password is required'],
-    },
-    refreshToken: {
-      type: String,
-      required: false,
     },
     role: {
       type: String,
@@ -66,14 +52,6 @@ userSchema.methods.generateAccessToken = function () {
     process.env.ACCESS_TOKEN_SECRET,
     { expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN }
   );
-};
-
-userSchema.methods.generateRefreshToken = function () {
-  return jwt.sign({ 
-    id: this._id
-  }, process.env.REFRESH_TOKEN_SECRET, {
-    expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN,
-  });
 };
 
 export default mongoose.model('User', userSchema);

@@ -7,7 +7,8 @@ const router = express.Router();
 
 router.post('/register', [
   body('email').isEmail().normalizeEmail(),
-  body('password').isLength({ min: 6 }),
+  body('password').isLength({ min: 1 }).isString(),
+  body('username').isLength({ min: 1 }).isString(),
 ], async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -15,12 +16,12 @@ router.post('/register', [
   }
 
   try {
-    const { email, password } = req.body;
+    const { email, password, username, role } = req.body;
     let user = await userModel.findOne({ email });
     if (user) {
       return res.status(400).json({ message: 'User already exists' });
     }
-    user = new userModel({ email, password });
+    user = new userModel({ email, password, username, role });
     await user.save();
     
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
@@ -32,7 +33,7 @@ router.post('/register', [
 
 router.post('/login', [
   body('email').isEmail().normalizeEmail(),
-  body('password').exists(),
+  body('password').isLength({ min: 1 }).isString(),
 ], async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {

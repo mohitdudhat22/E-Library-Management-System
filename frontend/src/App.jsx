@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import { useAuth } from './contexts/AuthContext';
+import Register from './components/Register';
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -19,6 +20,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path='/register' element={<Register />} />
         <Route
           path="/dashboard"
           element={

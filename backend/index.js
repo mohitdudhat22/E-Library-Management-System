@@ -21,4 +21,4 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use(errorHandler());
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
-export default 
+export default app;
