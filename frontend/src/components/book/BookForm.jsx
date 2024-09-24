@@ -5,8 +5,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 
 const BookForm = () => {
-  const { id } = useParams(); // Get book ID from URL for editing
-  const navigate = useNavigate(); // Initialize navigate
+  const { id } = useParams();
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     title: '',
@@ -20,11 +20,10 @@ const BookForm = () => {
 
   useEffect(() => {
     if (id) {
-      // Fetch book details for editing
       const fetchBookDetails = async () => {
         try {
           const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/books/${id}`);
-          setFormData(response.data); // Populate form with existing book details
+          setFormData(response.data);
         } catch (error) {
           console.error('Error fetching book details for editing:', error);
         }
@@ -43,7 +42,6 @@ const BookForm = () => {
     console.log(id)
     try {
       if (id) {
-        // Update existing book (PUT request)
         const response = await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/books/${id}`, formData, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -51,7 +49,6 @@ const BookForm = () => {
         });
         console.log('Book updated successfully:', response.data);
       } else {
-        // Create new book (POST request)
         const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/books`, formData, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -59,8 +56,6 @@ const BookForm = () => {
         });
         console.log('Book created successfully:', response.data);
       }
-
-      // Redirect to book list or another page after saving
       navigate('/books');
     } catch (error) {
       setError(error.response?.data?.error || 'Failed to save book');

@@ -46,7 +46,6 @@ const BookDetailView = () => {
   };
 
   const handleEdit = () => {
-    // Redirect to EditBook form
     navigate(`/books/edit/${id}`);
   };
 

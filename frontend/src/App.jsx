@@ -8,11 +8,12 @@ import BookForm from './components/book/BookForm';
 import BookListing from './components/book/BookListing';
 import Loading from './components/common/Loading';
 import BookDetailView from './components/book/BookDetailView';
+import Navbar from './components/common/Navbar';
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
   
-  if (loading) {
-    return <div>Loading...</div>;
+  if (!loading) {
+    return <Loading/>;
   }
   
   return user ? children : <Navigate to="/login" />;
@@ -21,24 +22,16 @@ const PrivateRoute = ({ children }) => {
 function App() {
   return (
     <Router>
+      <Navbar/>
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path='/register' element={<Register />} />
-        <Route path='/bookform' element={<BookForm />} />
+        <Route path='/books' element={<BookListing />} />
+        <Route path='/books/add' element={<BookForm />} />
         <Route path='/books/edit/:id' element={<BookForm />} />
-        <Route path='/booklist' element={<BookListing />} />
         <Route path='/bookdetailview' element={<BookDetailView />} />
         <Route path='/bookdetailview/:id' element={<BookDetailView />} />
         <Route path='/load' element={<Loading />} / >
-        <Route
-          path="/dashboard"
-          element={
-            <PrivateRoute>
-              <Dashboard />
-            </PrivateRoute>
-          }
-        />
-        <Route path="/" element={<Navigate to="/dashboard" />} />
       </Routes>
     </Router>
   );
