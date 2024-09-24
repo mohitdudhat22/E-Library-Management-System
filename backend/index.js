@@ -5,6 +5,7 @@ import {swaggerUi, swaggerDocs} from './utils/swagger.js';
 import authRoutes from './routes/authRoutes.js';
 import bookRoutes from './routes/bookRoutes.js';
 import dbConnect from './config/dbConnect.js';
+import authMiddleware from './middlewares/authMiddleware.js';
 
 const PORT = process.env.PORT || 8080;
 
@@ -15,7 +16,7 @@ dbConnect();
 
 // Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/books', bookRoutes);
+app.use('/api/books',authMiddleware, bookRoutes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.use(errorHandler());

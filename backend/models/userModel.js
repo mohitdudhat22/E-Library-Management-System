@@ -27,6 +27,13 @@ const userSchema = new mongoose.Schema(
       enum: ['user', 'admin'],
       default: 'user',
     },
+    borrowedBooks: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Book',
+        default: [],
+      },
+    ],
   },
   { timestamps: true }
 );

@@ -26,8 +26,9 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
+    console.log(req.body);
     const newBook = await bookModel.create(req.body);
-    res.status(201).json(newBook);
+    res.status(201).json({newBook, message: 'Book created successfully'});
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -39,7 +40,7 @@ router.put('/:id', async (req, res) => {
     if (!updatedBook) {
       return res.status(404).json({ error: 'Book not found' });
     }
-    res.json(updatedBook);
+    res.json({updatedBook, message: 'Book updated successfully'});
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -64,8 +65,9 @@ router.post('/:id/borrow', async (req, res) => {
       return res.status(404).json({ error: 'Book not found' });
     }
     book.isBorrowed = true;
+    book.available = false;
     await book.save();
-    res.json(book);
+    res.json({book, message: 'Book borrowed successfully' , borrwer: req.body.user});
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -75,8 +77,9 @@ router.post('/:id/return', async (req, res) => {
   try {
     const book = await bookModel.findById(req.params.id);
     book.isBorrowed = false;
+    book.available = true;
     await book.save();
-    res.json(book);
+    res.json({book, message: 'Book returned successfully', returner: req.body.user});
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

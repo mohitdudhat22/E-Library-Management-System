@@ -24,6 +24,7 @@ const bookSchema = new mongoose.Schema({
   borrowedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
+    default: null,
   },
   isBorrowed: {
     type: Boolean,
