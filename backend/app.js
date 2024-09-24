@@ -2,12 +2,24 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import errorHandler from './middlewares/errorHandler.js';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
+import dbConnect from './config/dbConnect.js';
 dotenv.config();
 
 const app = express();
+
+dbConnect();
+
+// await dbConnect().then(() => {
+//     console.log('Connected to database');
+//     // app.on('error', (error) => {
+//     //     console.log(error);
+//     //     throw error;
+//     // });
+//     // app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+//     return app;
+// });
 
 app.use(cors({
     origin: process.env.CORS_ORIGIN,
@@ -23,17 +35,7 @@ app.use(cookieParser());
 app.use(helmet());
 app.use(cors());
 app.use(morgan('dev'));
-app.use(errorHandler());
 
-
-dbConnect().then(() => {
-    console.log('Connected to database');
-    // app.on('error', (error) => {
-    //     console.log(error);
-    //     throw error;
-    // });
-    // app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-});
 
 
 export {app}

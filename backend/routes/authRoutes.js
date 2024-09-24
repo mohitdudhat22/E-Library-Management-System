@@ -1,7 +1,7 @@
-const express = require('express');
-const { body, validationResult } = require('express-validator');
-const jwt = require('jsonwebtoken');
-const User = require('../models/user.model');
+import express from 'express';
+import { body, validationResult } from 'express-validator';
+import jwt from 'jsonwebtoken';
+import userModel from '../models/userModel.js';
 
 const router = express.Router();
 
@@ -16,11 +16,11 @@ router.post('/register', [
 
   try {
     const { email, password } = req.body;
-    let user = await User.findOne({ email });
+    let user = await userModel.findOne({ email });
     if (user) {
       return res.status(400).json({ message: 'User already exists' });
     }
-    user = new User({ email, password });
+    user = new userModel({ email, password });
     await user.save();
     
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
@@ -41,7 +41,7 @@ router.post('/login', [
 
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
+    const user = await userModel.findOne({ email });
     if (!user || !(await user.comparePassword(password))) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
@@ -53,4 +53,4 @@ router.post('/login', [
   }
 });
 
-module.exports = router;
+export default router;

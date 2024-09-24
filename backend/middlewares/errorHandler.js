@@ -1,4 +1,4 @@
-const errorHandler = (err, req, res, next) => {
+const errorHandler = () => (err, req, res, next) => {
     if (err && err.stack) {
         console.error(err.stack);
     } else {

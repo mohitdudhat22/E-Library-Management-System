@@ -1,15 +1,17 @@
 import mongoose from 'mongoose';
 import { DB_NAME } from '../constants.js';
+import dotenv from 'dotenv';
+dotenv.config({path: './.env'});
+console.log(`${process.env.MONGODB_URI}/${DB_NAME}`);
 
-const dbConnect = () => {
-  const connectionInstance = mongoose.connect(`${process.env.MONGODB_URI}/${DB_NAME}`)
-  .then(() => {
-    console.log(`\n Connected to MongoDB: ${connectionInstance.connection.host}`);
-})
-  .catch((err) => {
-      console.error('MongoDB connection error:', err);
-      process.exit(1);
-    });
-};
-  
+
+const dbConnect = async () => {
+    try {
+        await mongoose.connect(`${process.env.MONGODB_URI}/${DB_NAME}?retryWrites=true&w=majority&appName=Cluster0`);
+        console.log('Connected to database');
+    } catch (error) {
+        console.log('Error connecting to database', error);
+    }
+}
+
 export default dbConnect;
