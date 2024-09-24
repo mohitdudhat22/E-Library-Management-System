@@ -1,20 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import Card from './../common/Card';
-
+import axios from 'axios';
 const BookListing = () => {
   const [books, setBooks] = useState([]);
   const [filters, setFilters] = useState({ genre: '', author: '', date: '' });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Simulating API call with dummy data
-    const dummyData = [
-      { id: 1, title: 'Book 1', author: 'Author 1', genre: 'Fiction', publicationDate: '2020-01-01', available: true },
-      { id: 2, title: 'Book 2', author: 'Author 2', genre: 'Non-Fiction', publicationDate: '2019-01-01', available: false },
-      { id: 3, title: 'Book 3', author: 'Author 3', genre: 'Romance', publicationDate: '2018-01-01', available: true },
-      { id: 4, title: 'Book 4', author: 'Author 4', genre: 'Thriller', publicationDate: '2017-01-01', available: false },
-      { id: 5, title: 'Book 5', author: 'Author 5', genre: 'Science Fiction', publicationDate: '2016-01-01', available: true },
-    ];
-    setBooks(dummyData);
+    const fetchBooks = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        // Using Vite environment variable for API base URL
+        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/books`,
+          {
+           headers: {
+             Authorization: `Bearer ${localStorage.getItem('token')}`
+           } 
+          });
+        setBooks(response.data);
+      } catch (error) {
+        setError('Failed to fetch books.');
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBooks();
   }, []);
 
   const handleFilterChange = (e) => {
@@ -25,7 +40,7 @@ const BookListing = () => {
     return (
       (filters.genre ? book.genre === filters.genre : true) &&
       (filters.author ? book.author === filters.author : true) &&
-      (filters.date ? book.publicationDate === filters.date : true)
+      (filters.date ? new Date(book.publicationDate).toISOString().split('T')[0] === filters.date : true)
     );
   });
 

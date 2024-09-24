@@ -21,7 +21,7 @@ const Card = ({ title, author, genre, publicationDate, available }) => {
           </div>
           <div className="flex justify-between items-center">
             <span className="text-neutral">Publication Date:</span>
-            <span className="text-white font-medium">{publicationDate}</span>
+            <span className="text-white font-medium">{new Date(publicationDate).toLocaleDateString('en-GB')}</span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-neutral">Available:</span>
