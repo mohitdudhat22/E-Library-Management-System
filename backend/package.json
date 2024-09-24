@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "backend for the project",
+  "description": "E-Library Management System",
   "main": "index.js",
   "type": "module",
   "scripts": {
