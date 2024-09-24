@@ -4,12 +4,10 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
-import dbConnect from './config/dbConnect.js';
 dotenv.config();
 
 const app = express();
 
-dbConnect();
 
 // await dbConnect().then(() => {
 //     console.log('Connected to database');
