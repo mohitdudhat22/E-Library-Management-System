@@ -25,8 +25,10 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path='/register' element={<Register />} />
         <Route path='/bookform' element={<BookForm />} />
+        <Route path='/books/edit/:id' element={<BookForm />} />
         <Route path='/booklist' element={<BookListing />} />
         <Route path='/bookdetailview' element={<BookDetailView />} />
+        <Route path='/bookdetailview/:id' element={<BookDetailView />} />
         <Route path='/load' element={<Loading />} / >
         <Route
           path="/dashboard"

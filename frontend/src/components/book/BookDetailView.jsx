@@ -1,24 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom'; // Added useNavigate
 import BookDetailCard from './BookDetailCard';
+import axios from 'axios';
 
 const BookDetailView = () => {
-  const { id } = useParams(); // You can ignore this for now since we are using dummy data
+  const { id } = useParams();
   const [book, setBook] = useState(null);
+  const navigate = useNavigate(); // Initialize navigate
 
   useEffect(() => {
-    // Simulating fetching book data with dummy data
-    const dummyBook = {
-      id: id, // This can come from params or static id for now
-      title: 'The Great Gatsby',
-      author: 'F. Scott Fitzgerald',
-      genre: 'Classics',
-      publicationDate: '1925-04-10',
-      available: true, // Change this to false to test unavailable state
+    // Simulate fetching book details from the backend.
+    const fetchBookDetails = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/books/${id}`);
+        setBook(response.data);
+      } catch (error) {
+        console.error('Error fetching book details:', error);
+      }
     };
 
-    // Simulate network delay
-    setTimeout(() => setBook(dummyBook), 500);
+    fetchBookDetails();
   }, [id]);
 
   const handleBorrow = () => {
@@ -27,6 +28,26 @@ const BookDetailView = () => {
 
   const handleReturn = () => {
     console.log('Returning book:', id);
+  };
+
+  const handleDelete = async (bookId) => {
+    try {
+      await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/api/books/${bookId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        }
+      });
+      console.log('Book deleted successfully');
+      // Navigate to a different route (like book list) after deletion
+      navigate('/books');
+    } catch (error) {
+      console.error('Error deleting book:', error);
+    }
+  };
+
+  const handleEdit = () => {
+    // Redirect to EditBook form
+    navigate(`/books/edit/${id}`);
   };
 
   if (!book) return <div className="text-center text-neutral">Loading...</div>;
@@ -41,6 +62,8 @@ const BookDetailView = () => {
         available={book.available}
         onBorrow={handleBorrow}
         onReturn={handleReturn}
+        onEdit={handleEdit} // Pass edit handler
+        onDelete={() => handleDelete(id)}  // Pass delete handler
       />
     </div>
   );

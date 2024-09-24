@@ -1,6 +1,6 @@
 import React from 'react';
 
-const BookDetailCard = ({ title, author, genre, publicationDate, available, onBorrow, onReturn }) => {
+const BookDetailCard = ({ title, author, genre, publicationDate, available, onBorrow, onReturn, onDelete, onEdit }) => {
   return (
     <div className="flex flex-col justify-between p-8 w-full max-w-lg h-auto bg-gradient-to-r from-primary to-secondary rounded-3xl shadow-2xl text-neutral transition-transform duration-300 hover:scale-105">
       <div className="flex flex-col space-y-6">
@@ -36,6 +36,20 @@ const BookDetailCard = ({ title, author, genre, publicationDate, available, onBo
         >
           Return
         </button>
+      </div>
+      <div className="flex justify-between mt-10 space-x-6">
+  <button
+    className="w-full py-4 px-8 bg-blue-600 text-neutral font-bold rounded-2xl shadow-md hover:bg-blue-700 transition-all duration-200"
+    onClick={onEdit} // New handler for Edit
+  >
+    Edit
+  </button>
+  <button
+    className="w-full py-4 px-8 bg-red-600 text-neutral font-bold rounded-2xl shadow-md hover:bg-red-700 transition-all duration-200"
+    onClick={onDelete} // New handler for Delete
+  >
+    Delete
+  </button>
       </div>
     </div>
   );

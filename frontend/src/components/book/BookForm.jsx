@@ -1,10 +1,38 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import { useNavigate, useParams } from 'react-router-dom';
 
-const BookForm = ({ book, onSave }) => {
-  const [formData, setFormData] = useState(book || { title: '', author: '', genre: '', publicationDate: '', borrowedBy: '', available: true });
+
+const BookForm = () => {
+  const { id } = useParams(); // Get book ID from URL for editing
+  const navigate = useNavigate(); // Initialize navigate
+
+  const [formData, setFormData] = useState({
+    title: '',
+    author: '',
+    genre: '',
+    publicationDate: '',
+    borrowedBy: '',
+    available: true,
+  });
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (id) {
+      // Fetch book details for editing
+      const fetchBookDetails = async () => {
+        try {
+          const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/books/${id}`);
+          setFormData(response.data); // Populate form with existing book details
+        } catch (error) {
+          console.error('Error fetching book details for editing:', error);
+        }
+      };
+
+      fetchBookDetails();
+    }
+  }, [id]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -12,20 +40,33 @@ const BookForm = ({ book, onSave }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData)
+    console.log(id)
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/books`, formData, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-      console.log(response.data);
+      if (id) {
+        // Update existing book (PUT request)
+        const response = await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/books/${id}`, formData, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        console.log('Book updated successfully:', response.data);
+      } else {
+        // Create new book (POST request)
+        const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/books`, formData, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        console.log('Book created successfully:', response.data);
+      }
+
+      // Redirect to book list or another page after saving
+      navigate('/books');
     } catch (error) {
-      setError(error.response?.data?.error || 'Failed to create book');
+      setError(error.response?.data?.error || 'Failed to save book');
       console.error(error);
     }
   };
-
   return (
     <div className="flex justify-center items-center h-screen bg-gradient-to-r from-primary to-secondary">
       <div className="max-w-2xl w-1/2 p-8 bg-primary rounded-3xl shadow-2xl h-auto">
@@ -104,9 +145,5 @@ const BookForm = ({ book, onSave }) => {
   );
 };
 
-BookForm.propTypes = {
-  book: PropTypes.object,
-  onSave: PropTypes.func.isRequired,
-};
 
 export default BookForm;
