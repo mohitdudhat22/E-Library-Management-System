@@ -1,25 +1,40 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import axios from 'axios';
 
 const BookForm = ({ book, onSave }) => {
   const [formData, setFormData] = useState(book || { title: '', author: '', genre: '', publicationDate: '', borrowedBy: '', available: true });
+  const [error, setError] = useState(null);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSave(formData);
+    console.log(formData)
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/books`, formData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      console.log(response.data);
+    } catch (error) {
+      setError(error.response?.data?.error || 'Failed to create book');
+      console.error(error);
+    }
   };
 
   return (
     <div className="flex justify-center items-center h-screen bg-gradient-to-r from-primary to-secondary">
       <div className="max-w-2xl w-1/2 p-8 bg-primary rounded-3xl shadow-2xl h-auto">
         <h2 className="text-3xl font-bold text-accent text-center mb-8">Book Form</h2>
+        {error && <p className="text-red-500 text-center">{error}</p>}
         <form onSubmit={handleSubmit} className="space-y-8">
           <input
             type="text"
+            name="title"
             value={formData.title}
             onChange={handleChange}
             placeholder="Title"
@@ -28,6 +43,7 @@ const BookForm = ({ book, onSave }) => {
           />
           <input
             type="text"
+            name="author"
             value={formData.author}
             onChange={handleChange}
             placeholder="Author"
@@ -36,6 +52,7 @@ const BookForm = ({ book, onSave }) => {
           />
           <input
             type="text"
+            name="genre"
             value={formData.genre}
             onChange={handleChange}
             placeholder="Genre"
@@ -43,7 +60,8 @@ const BookForm = ({ book, onSave }) => {
             className="block w-full p-4 text-neutral bg-secondary border border-secondary rounded-2xl"
           />
           <input
-            type="text"
+            type="date" // Change to date input for better UX
+            name="publicationDate"
             value={formData.publicationDate}
             onChange={handleChange}
             placeholder="Publication Date"
@@ -52,6 +70,7 @@ const BookForm = ({ book, onSave }) => {
           />
           <input
             type="text"
+            name="borrowedBy"
             value={formData.borrowedBy}
             onChange={handleChange}
             placeholder="Borrowed By"

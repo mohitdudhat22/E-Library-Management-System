@@ -26,8 +26,8 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    console.log(req.body);
-    const newBook = await bookModel.create(req.body);
+    const { title, author, description, publicationDate, borrowedBy,available, isBorrowed,genre } = req.body;
+    const newBook = await bookModel.create({title, author, description, publicationDate, available, isBorrowed,genre});
     res.status(201).json({newBook, message: 'Book created successfully'});
   } catch (error) {
     res.status(500).json({ error: error.message });
