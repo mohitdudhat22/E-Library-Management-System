@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { DB_NAME } from '../constants';
+import { DB_NAME } from '../constants.js';
 
 const dbConnect = () => {
   const connectionInstance = mongoose.connect(`${process.env.MONGODB_URI}/${DB_NAME}`)
@@ -9,6 +9,7 @@ const dbConnect = () => {
   .catch((err) => {
       console.error('MongoDB connection error:', err);
       process.exit(1);
-  });
+    });
 };
-module.exports = dbConnect;
+  
+export default dbConnect;

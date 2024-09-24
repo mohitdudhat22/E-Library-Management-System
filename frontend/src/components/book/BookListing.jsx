@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const BookListing = () => {
   const [books, setBooks] = useState([]);
   const [filters, setFilters] = useState({ genre: '', author: '', date: '' });
 
   useEffect(() => {
-    // Fetch books from the backend
-    fetch('/api/books')
-      .then(response => response.json())
-      .then(data => setBooks(data));
+    axios.get('/api/books')
+      .then(response => setBooks(response.data));
   }, []);
 
   const handleFilterChange = (e) => {
