@@ -6,6 +6,8 @@ import { useAuth } from './contexts/AuthContext';
 import Register from './components/Register';
 import BookForm from './components/book/BookForm';
 import BookListing from './components/book/BookListing';
+import Loading from './components/common/Loading';
+import BookDetailView from './components/book/BookDetailView';
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
   
@@ -24,6 +26,8 @@ function App() {
         <Route path='/register' element={<Register />} />
         <Route path='/bookform' element={<BookForm />} />
         <Route path='/booklist' element={<BookListing />} />
+        <Route path='/bookdetailview' element={<BookDetailView />} />
+        <Route path='/load' element={<Loading />} / >
         <Route
           path="/dashboard"
           element={
