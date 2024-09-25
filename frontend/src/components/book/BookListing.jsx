@@ -45,7 +45,7 @@ const BookListing = () => {
   });
 
   return (
-    <div className="flex flex-col justify-items-stretch h-screen bg-gradient-to-r from-primary to-secondary">
+    <div className="flex flex-col justify-items-stretch bg-gradient-to-r from-primary to-secondary">
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold text-accent text-center mb-8">Book Listing</h1>
         <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 mb-8 justify-center">

@@ -2,7 +2,7 @@ import React from 'react';
 
 const Card = ({ title, author, genre, publicationDate, available }) => {
   return (
-    <div className=" bg-secondary rounded-2xl shadow-lg overflow-hidden h-full">
+    <div className=" bg-secondary rounded-2xl shadow-lg overflow-hidden">
       <div className="p-6">
         <div className="flex items-center mb-4 h-auto">
           <div className="w-full h-full bg-secondary rounded-lg mr-4 flex-shrink-0">

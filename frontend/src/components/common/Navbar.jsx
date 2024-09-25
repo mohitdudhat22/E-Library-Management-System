@@ -10,7 +10,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-primary p-4 shadow-lg">
+    <nav className="bg-primary p-4 shadow-lg sticky top-0">
       <div className="container mx-auto flex justify-between items-center">
         <div className="text-white text-2xl font-bold">
           <Link to="/">Library App</Link> 
