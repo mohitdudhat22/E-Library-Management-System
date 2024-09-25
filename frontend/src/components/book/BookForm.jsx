@@ -98,7 +98,8 @@ const BookForm = () => {
           <input
             type="date" // Change to date input for better UX
             name="publicationDate"
-            value={formData.publicationDate}
+            //iso to normal input date
+            value={formData.publicationDate ? new Date(formData.publicationDate).toISOString().slice(0, 10) : ''}
             onChange={handleChange}
             placeholder="Publication Date"
             required
