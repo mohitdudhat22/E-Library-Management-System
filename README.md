@@ -1,114 +1,114 @@
-# MERN Starter Template
+const readmeContent = `
+# E-Library Management Application
 
-This is a scalable and well-structured MERN stack starter template that includes essential features for web application development, such as user authentication, role-based access, and a clean code organization.
+## Overview
+This project is an E-Library Management Application that allows users to browse, borrow, return, and search for eBooks. The application is built using React for the frontend and Node.js with Express for the backend, utilizing MongoDB as the database.
 
-## Features
+## Table of Contents
+1. [Frontend Development](#frontend-development)
+2. [Backend Development](#backend-development)
+3. [Full-Stack Integration](#full-stack-integration)
+4. [Technologies Used](#technologies-used)
+5. [Installation](#installation)
+6. [Usage](#usage)
+7. [License](#license)
 
-- User Authentication (Registration and Login)
-- Role-Based Access Control (Admin and User roles)
-- JWT Authentication
-- Input Validation
-- Centralized Error Handling
-- API Documentation with Swagger
-- Frontend with React and Vite
-- State Management with Context API
-- Protected Routes and Role-Based UI
-- API Integration with Axios
-- Styling with Tailwind CSS
-- Testing with Jest and React Testing Library
-- Deployment to Heroku and Vercel
-- CI/CD with GitHub Actions
+## Frontend Development
 
-## Project Structure
+### Task Title: E-Library Management Frontend
 
-### Backend
+### Description
+Build the user interface for the E-Library Management Application using React. The frontend should allow users to browse, borrow, return, and search for eBooks, providing a responsive and user-friendly experience.
 
-The backend is built using Node.js, Express, and MongoDB. It follows a modular approach with separate routes, controllers, and services.
+### Requirements:
 
-#### Directory Structure
+- **Components**:
+  - **Book Listing**: Display a list of available eBooks with filters for genre, author, and publication date.
+  - **Book Detail View**: Show details of the eBook including title, author, genre, publication date, and an option to borrow or return the book.
+  - **Forms**: Create forms for adding new books to the library or editing existing book details.
+  
+- **Styling**: Use a CSS framework like Tailwind CSS or Material UI for a modern and engaging UI.
+- **State Management**: Use React hooks (useState, useEffect) or a state management library for handling app state and interactions.
 
-- `backend/`:
-  - `config/`: Configuration files
-  - `controllers/`: Route handlers
-  - `models/`: MongoDB models
-  - `routes/`: API routes
-  - `services/`: Business logic
-  - `utils/`: Helper functions
-  - `index.js`: Entry point
-  - `package.json`: Dependencies and scripts
+### UI Reference:
+- [Open Library](https://openlibrary.org/)
 
-#### Configuration
+## Backend Development
 
-- `config/dbConnect.js`: Connects to MongoDB
-- `config/constants.js`: Stores constants like database name
+### Task Title: E-Library Management Backend
 
-### Frontend
+### Description
+Develop the backend API for the E-Library Management Application using Node.js and Express. The API will handle user authentication, book management, and borrowing/returning operations.
 
-The frontend is built using React and Vite. It uses the Context API for state management and Axios for API requests.
+### Requirements:
+- **API Endpoints**:
+  - **User Authentication**: Implement JWT-based user authentication for registration and login.
+  
+  - **Book CRUD Operations**:
+    - **Create Book**: Endpoint to add a new book to the library.
+    - **Read Books**: Endpoint to retrieve a list of books or a specific book by ID.
+    - **Update Book**: Endpoint to edit an existing book's details.
+    - **Delete Book**: Endpoint to remove a book from the library.
+    
+  - **Borrow/Return Book**: Endpoints for users to borrow and return eBooks.
 
-#### Directory Structure
+- **Database**: Use MongoDB to store book data, ensuring proper schema design for fields like title, author, genre, availability, and user who borrowed it.
+- **Error Handling**: Implement robust error handling for invalid requests and server errors.
 
-- `frontend/`:
-  - `public/`: Static assets
-  - `src/`:
-    - `components/`: Reusable UI components
-    - `context/`: Context API
-    - `pages/`: Page components
-    - `App.js`: Main application component
-    - `index.js`: Entry point
-    - `package.json`: Dependencies and scripts
+### UI Reference:
+- [Open Library](https://openlibrary.org/)
 
-#### Configuration
+## Full-Stack Integration
 
-- `frontend/vite.config.js`: Vite configuration
-- `frontend/public/index.html`: HTML template
+### Task Title: E-Library Management Full-Stack Application
 
-### Deployment
+### Description
+Integrate the frontend and backend components to create a complete, functional E-Library Management Application. Ensure smooth communication between the client and server for a seamless user experience.
 
-#### Backend
+### Requirements:
+- **Integration**: Use Axios or Fetch API to connect the React frontend to the Node.js backend for user authentication and book management operations (borrow, return, etc.).
 
-- Deployed on Heroku
-- Repository: [Backend](https://github.com/your-username/backend-repo)
+## Technologies Used
+- Frontend: React, Tailwind CSS or Material UI
+- Backend: Node.js, Express, MongoDB
+- Authentication: JWT
+- State Management: React Hooks
 
-#### Frontend
-
-- Deployed on Vercel
-- Repository: [Frontend](https://github.com/your-username/frontend-repo)
-
-### CI/CD
-
-- CI/CD with GitHub Actions
-
-## Getting Started
-
-### Backend
-
-1. Install dependencies:
-   ```bash
-   cd backend
-   npm install
-   ```
-2. Start the server:
-   ```bash
-   npm start
-   ```
-
-### Frontend
-
-1. Install dependencies:
-   ```bash
+## Installation
+1. Clone the repository:
+   \`\`\`bash
+   git clone <repository-url>
+   \`\`\`
+2. Navigate to the frontend directory:
+   \`\`\`bash
    cd frontend
+   \`\`\`
+   - Install dependencies:
+   \`\`\`bash
    npm install
-   ```
-2. Start the development server:
-   ```bash
-   npm run dev
-   ```
+   \`\`\`
+3. Navigate to the backend directory:
+   \`\`\`bash
+   cd backend
+   \`\`\`
+   - Install dependencies:
+   \`\`\`bash
+   npm install
+   \`\`\`
 
-## Contributing
-
-We welcome contributions to this project! Please read our [contributing guidelines](CONTRIBUTING.md) for more details.
+## Usage
+1. Start the backend server:
+   \`\`\`bash
+   npm start
+   \`\`\`
+2. Start the frontend application:
+   \`\`\`bash
+   npm start
+   \`\`\`
+3. Access the application in your browser at \`http://localhost:3000\`.
 
 ## License
+This project is licensed under the MIT License. See the LICENSE file for details.
+`;
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+console.log(readmeContent);
