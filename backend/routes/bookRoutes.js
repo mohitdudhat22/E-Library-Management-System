@@ -1,5 +1,6 @@
 import bookModel from "../models/bookModel.js";
 import express from 'express';
+import userModel from "../models/userModel.js";
 
 const router = express.Router();
 
@@ -11,7 +12,14 @@ router.get('/', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-
+router.get('/users', async (req, res) => {
+  try {
+    const users = await userModel.find();
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+})
 router.get('/:id', async (req, res) => {
   try {
     const book = await bookModel.findById(req.params.id);
@@ -27,6 +35,7 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const { title, author, description, publicationDate, borrowedBy,available, isBorrowed,genre } = req.body;
+    console.log(req.body);
     const newBook = await bookModel.create({title, author, description, publicationDate, available, isBorrowed,genre});
     res.status(201).json({newBook, message: 'Book created successfully'});
   } catch (error) {
@@ -36,6 +45,7 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   try {
+    console.log(req.body, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<put");
     const updatedBook = await bookModel.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!updatedBook) {
       return res.status(404).json({ error: 'Book not found' });
@@ -83,9 +93,11 @@ router.post('/:id/return', async (req, res) => {
     if (!book) {
       return res.status(404).json({ error: 'Book not found' });
     }
-    if (book.borrowedBy !== req.body.user) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
+    // console.log(req.user, "<<<<<<<<<<<user");
+    // console.log(book.borrowedBy.toString(), "<<<<<<<book.borrowedBy");
+    // if (book.borrowedBy.toString() !== req.user) {
+    //   return res.status(401).json({ error: 'Unauthorized' });
+    // }
     book.isBorrowed = false;
     book.available = true;
     await book.save();

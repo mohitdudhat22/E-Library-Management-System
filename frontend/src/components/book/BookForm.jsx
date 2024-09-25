@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 
-
 const BookForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -13,9 +12,10 @@ const BookForm = () => {
     author: '',
     genre: '',
     publicationDate: '',
-    borrowedBy: '',
+    borrowedBy: '', // This will hold the selected user
     available: true,
   });
+  const [users, setUsers] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -29,6 +29,21 @@ const BookForm = () => {
         }
       };
 
+      const fetchAllUsers = async () => {
+        try {
+          const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/books/users`, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+          });
+          console.log(response.data);
+          setUsers(response.data);
+        } catch (error) {
+          console.error('Error fetching users:', error);
+        }
+      };
+
+      fetchAllUsers();
       fetchBookDetails();
     }
   }, [id]);
@@ -39,9 +54,11 @@ const BookForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(id)
+    console.log(id);
     try {
       if (id) {
+        formData.borrowedBy = users.find(user => user.username === formData.borrowedBy ? user._id : null)?._id || null;
+        console.log(formData, "<<<<<<<this is form data");
         const response = await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/books/${id}`, formData, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -62,6 +79,7 @@ const BookForm = () => {
       console.error(error);
     }
   };
+
   return (
     <div className="flex justify-center items-center h-screen bg-gradient-to-r from-primary to-secondary">
       <div className="max-w-2xl w-1/2 p-8 bg-primary rounded-3xl shadow-2xl h-auto">
@@ -98,21 +116,29 @@ const BookForm = () => {
           <input
             type="date" // Change to date input for better UX
             name="publicationDate"
-            //iso to normal input date
+            // Convert ISO to normal input date
             value={formData.publicationDate ? new Date(formData.publicationDate).toISOString().slice(0, 10) : ''}
             onChange={handleChange}
             placeholder="Publication Date"
             required
             className="block w-full p-4 text-neutral bg-secondary border border-secondary rounded-2xl"
           />
-          <input
-            type="text"
+          
+          {/* Dropdown for Borrowed By */}
+          <select
             name="borrowedBy"
             value={formData.borrowedBy}
             onChange={handleChange}
-            placeholder="Borrowed By"
             className="block w-full p-4 text-neutral bg-secondary border border-secondary rounded-2xl"
-          />
+          >
+            <option value="" disabled>Select User (Borrowed By)</option>
+            {users.map((user) => (
+              <option key={user.id} value={user.username}>
+                {user.username}
+              </option>
+            ))}
+          </select>
+
           <div className="flex items-center space-x-2">
             <div className={`rounded-full w-5 h-5 flex items-center justify-center ${formData.available ? 'bg-green-500' : 'bg-red-500'} text-white`}>
               {formData.available ? (
@@ -127,6 +153,7 @@ const BookForm = () => {
             </div>
             <p className="text-neutral text-sm">{formData.available ? 'Available' : 'Not Available'}</p>
           </div>
+
           <div className="flex justify-between items-center">
             <button type="submit" className="py-3 px-6 bg-accent hover:bg-accent hover:bg-opacity-80 text-neutral font-bold rounded-2xl">
               Save
@@ -140,6 +167,5 @@ const BookForm = () => {
     </div>
   );
 };
-
 
 export default BookForm;
