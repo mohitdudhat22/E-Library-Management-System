@@ -58,7 +58,7 @@ const BookListing = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 overflow-y-scroll scrollbar-hidden" style={{ maxHeight: 'calc(100vh - 300px)', minHeight: 'calc(100vh - 300px)' }}>
           {filteredBooks.length > 0 ? (
             filteredBooks.map(book => (
-              <Card key={book.id} title={book.title} author={book.author} genre={book.genre} publicationDate={book.publicationDate} available={book.available} />
+              <Card key={book._id} id={book._id} title={book.title} author={book.author} genre={book.genre} publicationDate={book.publicationDate} available={book.available} />
             ))
           ) : (
             <p className="text-neutral text-center">No books found.</p>

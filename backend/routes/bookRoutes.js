@@ -60,6 +60,8 @@ router.delete('/:id', async (req, res) => {
 
 router.post('/:id/borrow', async (req, res) => {
   try {
+    const user = req.body.user;
+
     const book = await bookModel.findById(req.params.id);
     if (!book) {
       return res.status(404).json({ error: 'Book not found' });
@@ -75,7 +77,15 @@ router.post('/:id/borrow', async (req, res) => {
 
 router.post('/:id/return', async (req, res) => {
   try {
+
+    //user should be able to return the the book if book is borrowed by the user
     const book = await bookModel.findById(req.params.id);
+    if (!book) {
+      return res.status(404).json({ error: 'Book not found' });
+    }
+    if (book.borrowedBy !== req.body.user) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
     book.isBorrowed = false;
     book.available = true;
     await book.save();

@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom'; // Added useNavigate
+import { useParams, useNavigate } from 'react-router-dom';
 import BookDetailCard from './BookDetailCard';
 import axios from 'axios';
 
 const BookDetailView = () => {
   const { id } = useParams();
   const [book, setBook] = useState(null);
-  const navigate = useNavigate(); // Initialize navigate
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Simulate fetching book details from the backend.
     const fetchBookDetails = async () => {
       try {
         const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/books/${id}`);
@@ -22,12 +21,32 @@ const BookDetailView = () => {
     fetchBookDetails();
   }, [id]);
 
-  const handleBorrow = () => {
-    console.log('Borrowing book:', id);
+  const handleBorrow = async () => {
+    try {
+      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/books/${id}/borrow`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      console.log('Book borrowed successfully');
+      navigate('/books');
+    } catch (error) {
+      console.error('Error borrowing book:', error);
+    }
   };
 
-  const handleReturn = () => {
-    console.log('Returning book:', id);
+  const handleReturn = async () => {
+    try {
+      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/books/${id}/return`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      console.log('Book returned successfully');
+      navigate('/books');
+    } catch (error) {
+      console.error('Error returning book:', error);
+    }
   };
 
   const handleDelete = async (bookId) => {
@@ -35,10 +54,9 @@ const BookDetailView = () => {
       await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/api/books/${bookId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
-        }
+        },
       });
       console.log('Book deleted successfully');
-      // Navigate to a different route (like book list) after deletion
       navigate('/books');
     } catch (error) {
       console.error('Error deleting book:', error);
@@ -61,8 +79,9 @@ const BookDetailView = () => {
         available={book.available}
         onBorrow={handleBorrow}
         onReturn={handleReturn}
-        onEdit={handleEdit} // Pass edit handler
-        onDelete={() => handleDelete(id)}  // Pass delete handler
+        onEdit={handleEdit}
+        onDelete={() => handleDelete(id)}
+        isBorrowed={book.isBorrowed}
       />
     </div>
   );
