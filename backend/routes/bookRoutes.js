@@ -1,6 +1,7 @@
 import bookModel from "../models/bookModel.js";
 import express from 'express';
 import userModel from "../models/userModel.js";
+import upload from "../cloudinary/multer.js";
 
 const router = express.Router();
 
@@ -32,25 +33,31 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.post('/', async (req, res) => {
+router.post('/',upload.single('image'), async (req, res) => {
   try {
+    const imageUrl = req.file ? req.file.path : req.body.image;
     const { title, author, description, publicationDate, borrowedBy,available, isBorrowed,genre } = req.body;
     console.log(req.body);
-    const newBook = await bookModel.create({title, author, description, publicationDate, available, isBorrowed,genre});
+    const newBook = await bookModel.create({title, author, description, publicationDate, available, isBorrowed,genre ,image:imageUrl});
     res.status(201).json({newBook, message: 'Book created successfully'});
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', upload.single('image'), async (req, res) => {
   try {
     console.log(req.body, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<put");
-    const updatedBook = await bookModel.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    
+    const imageUrl = req.file ? req.file.path : req.body.image;    
+    const updatedData = { ...req.body, image: imageUrl };
+    const updatedBook = await bookModel.findByIdAndUpdate(req.params.id, updatedData, { new: true });
+    
     if (!updatedBook) {
       return res.status(404).json({ error: 'Book not found' });
     }
-    res.json({updatedBook, message: 'Book updated successfully'});
+
+    res.json({ updatedBook, message: 'Book updated successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -87,17 +94,10 @@ router.post('/:id/borrow', async (req, res) => {
 
 router.post('/:id/return', async (req, res) => {
   try {
-
-    //user should be able to return the the book if book is borrowed by the user
     const book = await bookModel.findById(req.params.id);
     if (!book) {
       return res.status(404).json({ error: 'Book not found' });
     }
-    // console.log(req.user, "<<<<<<<<<<<user");
-    // console.log(book.borrowedBy.toString(), "<<<<<<<book.borrowedBy");
-    // if (book.borrowedBy.toString() !== req.user) {
-    //   return res.status(401).json({ error: 'Unauthorized' });
-    // }
     book.isBorrowed = false;
     book.available = true;
     await book.save();

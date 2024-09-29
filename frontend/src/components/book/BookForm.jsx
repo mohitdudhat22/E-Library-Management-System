@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -12,80 +11,108 @@ const BookForm = () => {
     author: '',
     genre: '',
     publicationDate: '',
-    borrowedBy: '', // This will hold the selected user
+    borrowedBy: '',
     available: true,
+    image: null,
   });
+
   const [users, setUsers] = useState([]);
   const [error, setError] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
   useEffect(() => {
     if (id) {
-      const fetchBookDetails = async () => {
-        try {
-          const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/books/${id}`);
-          setFormData(response.data);
-        } catch (error) {
-          console.error('Error fetching book details for editing:', error);
-        }
-      };
-
-      const fetchAllUsers = async () => {
-        try {
-          const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/books/users`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`,
-            },
-          });
-          console.log(response.data);
-          setUsers(response.data);
-        } catch (error) {
-          console.error('Error fetching users:', error);
-        }
-      };
-
-      fetchAllUsers();
       fetchBookDetails();
     }
+    fetchAllUsers();
   }, [id]);
 
+  const fetchBookDetails = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/books/${id}`);
+      setFormData({ ...response.data, image: null });
+      setImagePreview(response.data.image);
+    } catch (error) {
+      console.error('Error fetching book details:', error);
+      setError('Failed to fetch book details');
+    }
+  };
+
+  const fetchAllUsers = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/books/users`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      setUsers(response.data);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      setError('Failed to fetch users');
+    }
+  };
+
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value, type, checked } = e.target;
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData(prevData => ({ ...prevData, image: file }));
+      setImagePreview(URL.createObjectURL(file));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(id);
-    try {
-      if (id) {
-        formData.borrowedBy = users.find(user => user.username === formData.borrowedBy ? user._id : null)?._id || null;
-        console.log(formData, "<<<<<<<this is form data");
-        const response = await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/books/${id}`, formData, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
-        console.log('Book updated successfully:', response.data);
-      } else {
-        const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/books`, formData, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
-        console.log('Book created successfully:', response.data);
+    const formDataToSend = new FormData();
+    
+    Object.keys(formData).forEach(key => {
+      if (key !== 'image') {
+        formDataToSend.append(key, formData[key]);
       }
+    });
+
+    if (formData.image) {
+      formDataToSend.append('image', formData.image);
+    }
+
+    try {
+      const url = id
+        ? `${import.meta.env.VITE_API_BASE_URL}/api/books/${id}`
+        : `${import.meta.env.VITE_API_BASE_URL}/api/books`;
+      
+      const method = id ? 'put' : 'post';
+      
+      const response = await axios({
+        method,
+        url,
+        data: formDataToSend,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+
+      console.log('Book saved successfully:', response.data);
       navigate('/books');
     } catch (error) {
+      console.error('Error saving book:', error);
       setError(error.response?.data?.error || 'Failed to save book');
-      console.error(error);
     }
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gradient-to-r from-primary to-secondary">
-      <div className="max-w-2xl w-1/2 p-8 bg-primary rounded-3xl shadow-2xl h-auto">
-        <h2 className="text-3xl font-bold text-accent text-center mb-8">Book Form</h2>
-        {error && <p className="text-red-500 text-center">{error}</p>}
-        <form onSubmit={handleSubmit} className="space-y-8">
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-primary to-secondary py-8">
+      <div className="max-w-2xl w-full p-8 bg-primary rounded-3xl shadow-2xl">
+        <h2 className="text-3xl font-bold text-accent text-center mb-8">{id ? 'Edit Book' : 'Add New Book'}</h2>
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+        <form onSubmit={handleSubmit} className="space-y-6">
           <input
             type="text"
             name="title"
@@ -93,7 +120,7 @@ const BookForm = () => {
             onChange={handleChange}
             placeholder="Title"
             required
-            className="block w-full p-4 text-neutral bg-secondary border border-secondary rounded-2xl"
+            className="block w-full p-3 text-neutral bg-secondary border border-secondary rounded-xl"
           />
           <input
             type="text"
@@ -102,7 +129,7 @@ const BookForm = () => {
             onChange={handleChange}
             placeholder="Author"
             required
-            className="block w-full p-4 text-neutral bg-secondary border border-secondary rounded-2xl"
+            className="block w-full p-3 text-neutral bg-secondary border border-secondary rounded-xl"
           />
           <input
             type="text"
@@ -111,55 +138,58 @@ const BookForm = () => {
             onChange={handleChange}
             placeholder="Genre"
             required
-            className="block w-full p-4 text-neutral bg-secondary border border-secondary rounded-2xl"
+            className="block w-full p-3 text-neutral bg-secondary border border-secondary rounded-xl"
           />
           <input
-            type="date" // Change to date input for better UX
+            type="date"
             name="publicationDate"
-            // Convert ISO to normal input date
-            value={formData.publicationDate ? new Date(formData.publicationDate).toISOString().slice(0, 10) : ''}
+            value={formData.publicationDate ? new Date(formData.publicationDate).toISOString().split('T')[0] : ''}
             onChange={handleChange}
-            placeholder="Publication Date"
             required
-            className="block w-full p-4 text-neutral bg-secondary border border-secondary rounded-2xl"
+            className="block w-full p-3 text-neutral bg-secondary border border-secondary rounded-xl"
           />
-          
-          {/* Dropdown for Borrowed By */}
           <select
             name="borrowedBy"
             value={formData.borrowedBy}
             onChange={handleChange}
-            className="block w-full p-4 text-neutral bg-secondary border border-secondary rounded-2xl"
+            className="block w-full p-3 text-neutral bg-secondary border border-secondary rounded-xl"
           >
-            <option value="" disabled>Select User (Borrowed By)</option>
+            <option value="">Select User (Borrowed By)</option>
             {users.map((user) => (
-              <option key={user.id} value={user.username}>
+              <option key={user._id} value={user._id}>
                 {user.username}
               </option>
             ))}
           </select>
-
           <div className="flex items-center space-x-2">
-            <div className={`rounded-full w-5 h-5 flex items-center justify-center ${formData.available ? 'bg-green-500' : 'bg-red-500'} text-white`}>
-              {formData.available ? (
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-              ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              )}
-            </div>
-            <p className="text-neutral text-sm">{formData.available ? 'Available' : 'Not Available'}</p>
+            <input
+              type="checkbox"
+              name="available"
+              checked={formData.available}
+              onChange={handleChange}
+              className="form-checkbox h-5 w-5 text-accent"
+            />
+            <label className="text-neutral">Available</label>
           </div>
-
+          <div>
+            <label className="block text-neutral mb-2">Upload Image</label>
+            <input
+              type="file"
+              name="image"
+              onChange={handleFileChange}
+              className="block w-full p-3 text-neutral bg-secondary border border-secondary rounded-xl"
+              accept="image/*"
+            />
+            {imagePreview && (
+              <img src={imagePreview} alt="Book Preview" className="mt-4 w-32 h-32 object-cover rounded" />
+            )}
+          </div>
           <div className="flex justify-between items-center">
-            <button type="submit" className="py-3 px-6 bg-accent hover:bg-accent hover:bg-opacity-80 text-neutral font-bold rounded-2xl">
-              Save
+            <button type="submit" className="py-2 px-4 bg-accent hover:bg-opacity-80 text-neutral font-bold rounded-xl transition duration-300">
+              {id ? 'Update Book' : 'Add Book'}
             </button>
-            <button type="reset" className="py-3 px-6 bg-neutral hover:bg-neutral hover:bg-opacity-80 text-accent font-bold rounded-2xl">
-              Reset
+            <button type="button" onClick={() => navigate('/books')} className="py-2 px-4 bg-neutral hover:bg-opacity-80 text-accent font-bold rounded-xl transition duration-300">
+              Cancel
             </button>
           </div>
         </form>

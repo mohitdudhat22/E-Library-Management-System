@@ -30,6 +30,10 @@ const bookSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  image:{
+    type: String,
+    default: null,
+  }
 }, { timestamps: true });
 
 bookSchema.plugin(mongooseAggregatePaginate); // aggregation plugin
